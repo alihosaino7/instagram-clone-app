@@ -8,6 +8,7 @@ import SkeletonElement from "../components/skeletons/SkeletonElement";
 
 export default function OtherUserProfile() {
   const { userId } = useParams();
+  
   const {
     loading,
     user: otherUser,

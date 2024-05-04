@@ -23,22 +23,20 @@ const PostsList = () => {
 
   const postsCollection = collection(db, "posts");
 
-  useEffect(() => {
-    fetchPosts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useEffect(fetchPosts, []);
 
   useEffect(() => {
+
     function handleInfiniteScroll() {
-      if (scrollY + innerHeight >= document.documentElement.scrollHeight) {
+      if (scrollY + innerHeight >= document.documentElement.scrollHeight) 
         fetchMorePosts();
-      }
     }
+
     addEventListener("scroll", handleInfiniteScroll);
     return () => {
       removeEventListener("scroll", handleInfiniteScroll);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, [lastDoc]);
 
   function fetchMorePosts() {
@@ -59,7 +57,7 @@ const PostsList = () => {
       })) as IPost[];
 
       const lastDoc = postsSnapshot.docs[postsSnapshot.docs.length - 1] as any;
-      // setPosts((prevPosts) => [...prevPosts, ...newPostsChunk]);
+    
       dispatch(postsActions.postsAdded({ posts: newPostsChunk }));
 
       setLastDoc(lastDoc);
@@ -79,12 +77,12 @@ const PostsList = () => {
 
       const lastDoc = postsSnapshot.docs[postsSnapshot.docs.length - 1] as any;
 
-      // setPosts(posts);
       dispatch(postsActions.postsAdded({ posts: posts }));
       setLastDoc(lastDoc);
     });
   }
 
+  // If posts not loaded yet, display skeleton posts until posts loaded
   if (!posts) {
     return (
       <div className="flex flex-col flex-1 gap-4">

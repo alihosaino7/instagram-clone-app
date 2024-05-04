@@ -23,7 +23,7 @@ export function useUserProfileById(userId: string) {
   async function getUserPosts(): Promise<IPost[]> {
     try {
       const userPostsSnapshot = await getDocs(
-        query(collection(db, "posts"), where("authorId", "==", userId))
+        query(collection(db, "posts"), where("author.id", "==", userId))
       );
 
       if (userPostsSnapshot.empty) return [];

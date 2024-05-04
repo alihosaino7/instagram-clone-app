@@ -3,7 +3,7 @@ import { AiOutlineCamera } from "react-icons/ai";
 import { useRef, useState } from "react";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../../config/firebase";
-import { doc, updateDoc } from "firebase/firestore";
+import { getDocs, collection, query, where,doc, updateDoc } from "firebase/firestore";
 import { useAuth } from "../../contexts/AuthContext";
 import CustomAvatar from "./CustomAvatar";
 import { useFollow } from "../../hooks/useFollow";
@@ -21,7 +21,7 @@ function ProfileInfo({
   postsCount,
 }: ProfileInfoProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [selectedImage, setSelecteImage] = useState<string>("");
+  const [selectedImage, setSelectedImage] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const { user: authUser } = useAuth();
 
@@ -29,6 +29,17 @@ function ProfileInfo({
     authUser as IUser,
     user as IUser
   );
+
+  async function updatePostsAvatars(downloadURL: string): Promise<void> {
+    const postsCollection = collection(db, 'posts');
+    const userPostsQuery = query(postsCollection, where('author.id', '==', user?.userId));
+    const querySnapshot = await getDocs(userPostsQuery);
+    querySnapshot.forEach(async (doc) => {
+      await updateDoc(doc.ref, {
+        'author.avatar': downloadURL
+      });
+    });
+  }
 
   async function handleUploadImage(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -46,7 +57,9 @@ function ProfileInfo({
       userImage: downloadURL,
     });
 
-    setSelecteImage(downloadURL);
+    await updatePostsAvatars(downloadURL)
+
+    setSelectedImage(downloadURL);
 
     setLoading(false);
   }
